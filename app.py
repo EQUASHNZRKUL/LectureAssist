@@ -5,11 +5,14 @@ import json
 app = Flask(__name__)
 
 
+#TODO: Grab text from image
+#TODO: Grab keywords
+SIMILARITY_INDEX = 0.5
+
 '''
 Takes a list of keywords and
 returns the similarity
 '''
-
 
 def similiarity(keywords1, keywords2):
     counter = 0
@@ -39,7 +42,7 @@ def getText():
 
         for questionToCompare in quest:
             s = similiarity(keywords, quest[questionToCompare])
-            if s > 0.5:
+            if s > SIMILARITY_INDEX:
                 # we need to return a positive count
                 return {"count": 1}
         # at this point the question is new
@@ -47,6 +50,32 @@ def getText():
         with open('questions.json', 'w') as f:
             json.dump(quest, f)
         return {"count": 0}
+
+'''
+    Takes question's count and age and gives a score. 
+'''
+def getPriority(upCount, age):
+    
+
+'''
+    Takes encoded_string of pptx slide image and stores keywords into a json.
+'''
+def get_image_mssg(encoded_string):
+  img_request = {}
+  rtype = {}
+  img_request["image"] = {"content" : encoded_string}
+  img_request["features"] = []
+  img_request["features"].append({"type": "TEXT_DETECTION"})
+
+  payload = {}
+  payload["requests"] = []
+  payload["requests"].append(img_request)
+
+  request_string = 'https://vision.googleapis.com/v1/images:annotate?key=' + AIzaSyBxdgB4Hf7E504gHXbKVEVt6-FnZEXBpzM
+  r = requests.post(request_string, data=json.dumps(payload))
+  res = json.loads(r.text)
+
+  return res
 
 
 if __name__ == '__main__':
